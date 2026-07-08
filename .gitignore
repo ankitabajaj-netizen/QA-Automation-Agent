@@ -1,0 +1,10 @@
+bin/
+obj/
+artifacts/run-*/
+*.user
+.vs/
+
+__pycache__/
+*.pyc
+.venv/
+venv/
