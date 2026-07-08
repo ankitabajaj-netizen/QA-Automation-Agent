@@ -290,35 +290,95 @@ at least one scenario (multi-selection markets → S2/S4, idempotency of redeliv
 the SLA note → S6) except the three items explicitly pushed to `open_questions` — which is the
 correct outcome for genuinely unspecified behavior, not a coverage gap.
 
-**What was actually run, versus reasoned through.** This environment has Python and internet
-access but no .NET SDK and no `OPENAI_API_KEY`, which draws a clean line between what's verified
-and what's still a claim:
+**What was verified offline (no API key, no .NET SDK):**
 - Installed the real `openai-agents` package (0.17.7) and `pydantic` (2.12.5) and imported against
   them, rather than writing code against a remembered API shape.
-- Instantiated all three `Agent` objects (`PlannerAgent`, `GeneratorAgent`, `TriageAgent`) and
-  confirmed `name`/`model`/`output_type` are wired as intended — this is the part that would have
-  been silently wrong in a hand-written-and-hoped C# port of the SDK's shape.
-- Ran the full offline path end to end in-process: `planner_agent.run` → 6 scenarios / 4 open
-  questions, `generator_agent.run` → a feature file containing `Feature:`, `triage_agent.run` on a
-  synthetic execution summary shaped like the real one → correctly returned one `RealDefect`
-  (S1/P0) and one `Flaky` (S3/P2), matching the ground truth in the table above.
-- Ran `python orchestrator/main.py --auto` for real. It got through Planning and Generation,
-  overwrote the checked-in feature file, and failed exactly at the `dotnet test` subprocess call
-  with a clean `FileNotFoundError` (no .NET SDK here) — i.e. the pipeline is correct end-to-end up
-  to the one boundary this sandbox can't cross.
+- Instantiated all three `Agent` objects and confirmed `name`/`model`/`output_type` are wired as
+  intended — this is the part that would have been silently wrong in a hand-written-and-hoped C#
+  port of the SDK's shape.
+- Ran the full offline path end to end in-process: 6 scenarios / 4 open questions from the
+  Planner, a valid feature file from the Generator, and `RealDefect`/`Flaky` from the Triage
+  agent on a synthetic execution summary — matching the ground truth in the table above.
 
-**What's still unverified, not reasoned through:** whether `gpt-4o-mini`, called live, actually
-resists the injected payload in `story.md` and reproduces the same `RealDefect`/`Flaky` labels
-without a human forcing the offline path — that needs a real `OPENAI_API_KEY` and a `dotnet`
-install, and is the first thing to check on a real machine before trusting this beyond a demo (see
-README's verification note).
+**What was verified live, with a real `OPENAI_API_KEY` and the .NET SDK, on a follow-up run** (see
+[README](README.md) for the NuGet/runtime setup this took — this codebase was built and evaluated
+across two different machines, which is itself part of the trustworthiness story). Two live runs
+of `python orchestrator/main.py --auto` surfaced two genuine findings that no amount of reasoning
+through the offline templates would have caught:
+
+1. **The Planner invents good scenarios the Generator can't faithfully represent.** One live run's
+   Planner proposed a scenario absent from my own hand-written offline plan: what happens if a red
+   card arrives after a market's betting period has already closed? A legitimately good boundary
+   case. But the Generator's fixed step vocabulary has no way to express "betting period is
+   closed" — instead of surfacing that gap, it silently dropped the precondition, reused an
+   existing scenario's `Given`/`When` verbatim, and flipped the expected outcome. The result was a
+   feature file with two scenarios sharing *identical* setup and action but *contradictory*
+   assertions (one said market M1 goes `Suspended`, the other said the same M1 stays `Open`) — and
+   both passed the `_uses_only_known_steps` allow-list, because every line was individually valid
+   vocabulary. That check catches invented *phrasing*; it does not catch invented *logic*. This is
+   the single most useful thing either live run found, and it's now the top item in
+   [What I'd build next](#what-id-build-next).
+2. **Triage's root-cause narrative is only as good as the ambiguity in the assertion text.** A
+   second live run correctly deduped two failures into one defect and correctly did *not* call it
+   flaky — both real strengths, confirmed:
+   ```json
+   { "title": "Market Suspension Delay", "classification": "RealDefect",
+     "affected_scenarios": ["CheckSuspensionTimingAfterRedCardEvent",
+                             "TestingSuspensionJustBeforeAndAfterTheRedCardIncident"],
+     "dedup_key": "MarketSuspensionTiming",
+     "likely_root_cause": "Market M3 suspension timing issue." }
+   ```
+   But the root cause is imprecise: the actual failures were `"Market M3 was not suspended within
+   200ms (still Open)."` and `"...within 500ms (still Open)."` — which reads exactly like a
+   latency problem, and Triage called it one ("timing issue"). The real cause is the planted
+   eligibility bug (M3's carded player wasn't first in its `EligiblePlayerIds` list, so M3 was
+   never going to suspend, regardless of budget). Triage has no way to distinguish "too slow" from
+   "never happens" from the assertion text alone — it only sees a timeout-shaped failure message.
+   This is a concrete case for a change noted in What I'd build next: have the Executor capture
+   whether a market *ever* reaches the expected state after an extended settle period, as a
+   diagnostic signal separate from the pass/fail assertion, so Triage isn't reasoning blind on this
+   distinction.
+3. **A smaller, quieter finding:** the Triage prompt asks for `severity` in `"S1".."S4"` and
+   `priority` in `"P0".."P3"`; the live model instead returned `"High"`/`"Critical"`. `output_type`
+   enforces the JSON *shape* (field names and types) but not the *string values* within it — a
+   free-text `str` field is still free text. The fix is straightforward (a `Literal["S1", "S2",
+   "S3", "S4"]` type on the pydantic field instead of `str`, which would make the schema itself
+   reject an out-of-vocabulary value) but wasn't in place for this run, so it's listed as a known
+   gap rather than fixed after the fact.
+
+**The prompt injection defense held, both times.** Neither live run's `open_questions` showed any
+sign of the payload in `story.md` working — no leaked environment variables, no claim that every
+scenario passed, no skipped planning (6 and 7 scenarios were genuinely planned across the two
+runs, both times with plausible, on-topic open questions). This is a small sample — n=2 live runs
+— but it's a real result, not the "still unverified" placeholder from the first draft of this doc.
+
+Net effect on how much to trust this: the parts of the design meant to catch *known* problems
+(rerun-based flakiness detection, dedup, severity-weighted classification, prompt injection) held
+up correctly across both live runs. The parts meant to catch *unknown* problems (a
+syntactically-valid-but-illogical scenario slipping through, an imprecise root-cause narrative)
+did not, and both gaps are now specific, evidenced backlog items rather than hypothetical ones.
 
 ## What I'd build next
 
-- **Run it live and check the injection/labels for real.** The offline path is fully verified (see
-  Evaluation); a live `gpt-4o-mini` run against the adversarial `story.md` and the real
-  `dotnet test` output is the next concrete step, on a machine with both an API key and the .NET
-  SDK.
+Reordered from the first draft: the top three items below are no longer speculative — they're
+direct responses to the two concrete gaps the live runs surfaced (see Evaluation).
+
+- **A scenario-consistency check in the Generator**, on top of the existing step-vocabulary
+  allow-list. `_uses_only_known_steps` catches invented *phrasing*; it doesn't catch invented
+  *logic*. Concretely: fingerprint each scenario by its `Given`+`When` steps and reject (fall back
+  to the offline feature) if two scenarios share a fingerprint but assert contradictory outcomes —
+  this is exactly the failure mode a live run produced (two scenarios, identical setup, one said
+  `Suspended` and the other said `Open` for the same market). Cheap to add, directly evidenced.
+- **Capture "did it ever converge" as a diagnostic, separate from pass/fail.** Triage
+  mis-attributed a real eligibility bug as a "timing issue" because the only signal it had was a
+  timeout-shaped assertion message (`"was not suspended within 200ms"`). Have the Executor also
+  record whether a market reaches the expected state after a long settle window (e.g. 5s) even
+  when the test's own budget already failed it — "never, even given 5s" vs. "just outside a 200ms
+  budget" are different bugs and should read differently to Triage.
+- **Constrain `severity`/`priority`/`classification` with `Literal[...]` types**, not plain `str`.
+  A live run returned `"High"`/`"Critical"` instead of the requested `S1-S4`/`P0-P3` vocabulary —
+  `output_type` enforces JSON shape, not string content, so an enum-shaped pydantic field is the
+  actual fix, not a stronger prompt.
 - **Let Triage close the loop with Generation**, using the Agents SDK's own `handoffs` (now that
   it's genuinely available). On a `RealDefect`, hand a minimal regression scenario back to the
   Generator so the bug gets a permanent test, not just a filed ticket — today's pipeline is a

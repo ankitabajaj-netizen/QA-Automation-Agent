@@ -1,0 +1,67 @@
+{
+  "feature_name": "Suspend Betting Markets on Red Card",
+  "scenarios": [
+    {
+      "id": "P0-1",
+      "title": "Suspend markets upon direct red card",
+      "priority": "P0",
+      "type": "Functional",
+      "rationale": "Ensures no further bets can be placed on markets post-red card, preventing financial loss."
+    },
+    {
+      "id": "P0-2",
+      "title": "Suspend markets upon second yellow card resulting in red card",
+      "priority": "P0",
+      "type": "Functional",
+      "rationale": "Ensures second yellow cards leading to red cards are handled the same way to avoid market exposure."
+    },
+    {
+      "id": "P1-1",
+      "title": "Check suspension timing after red card event",
+      "priority": "P1",
+      "type": "Performance",
+      "rationale": "Verifies that markets are suspended within seconds of red card event to mitigate financial risks."
+    },
+    {
+      "id": "P1-2",
+      "title": "No suspension of unrelated markets",
+      "priority": "P1",
+      "type": "Functional",
+      "rationale": "Ensures that only markets related to the player are suspended, preserving valid betting opportunities."
+    },
+    {
+      "id": "P2-1",
+      "title": "Verify suspension for combined markets with multiple players",
+      "priority": "P2",
+      "type": "Functional",
+      "rationale": "Ensures that markets with the player as one of many selections are appropriately suspended."
+    },
+    {
+      "id": "Negative-1",
+      "title": "No suspension if red card received after match termination",
+      "priority": "P1",
+      "type": "Negative",
+      "rationale": "Validates that no suspension occurs if a red card is issued post-match."
+    },
+    {
+      "id": "Boundary-1",
+      "title": "Testing suspension just before and after the red card incident",
+      "priority": "P2",
+      "type": "Boundary",
+      "rationale": "Verifies exact timing of trade suspension to ensure adherence to near-real-time expectations."
+    }
+  ],
+  "open_questions": [
+    "What exact time frame is considered 'near-real-time' for suspending markets after a red card?",
+    "How will the system identify related markets if multiple players are involved and there are numerous betting markets?",
+    "Is there a specific obligation to inform users when markets are suspended, or is this strictly a backend process?"
+  ],
+  "entry_criteria": [
+    "Red card event is received from upstream match events feed.",
+    "Markets related to the player are currently open."
+  ],
+  "exit_criteria": [
+    "All relevant markets must be suspended immediately upon red card receipt.",
+    "Verify that the system logs the suspension action for auditing purposes."
+  ]
+}

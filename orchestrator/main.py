@@ -12,10 +12,16 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 from qe_agents import executor_agent, generator_agent, planner_agent, triage_agent
 from qe_agents.models import DefectReport, ExecutionSummary, TestPlan
 
 THIS_DIR = Path(__file__).resolve().parent
+
+# Loads OPENAI_API_KEY (and anything else) from a .env file next to this script, if present.
+# A real environment variable set in the shell always wins - load_dotenv() never overwrites one.
+load_dotenv(THIS_DIR / ".env")
 
 
 def _find_repo_root(start_dir: Path) -> Path:

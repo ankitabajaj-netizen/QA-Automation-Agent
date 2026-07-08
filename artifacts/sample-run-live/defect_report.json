@@ -1,0 +1,18 @@
+{
+  "defects": [
+    {
+      "title": "Market Suspension Delay",
+      "classification": "RealDefect",
+      "severity": "High",
+      "priority": "Critical",
+      "likely_root_cause": "Market M3 suspension timing issue.",
+      "suggested_owner": "Trading Team",
+      "affected_scenarios": [
+        "CheckSuspensionTimingAfterRedCardEvent",
+        "TestingSuspensionJustBeforeAndAfterTheRedCardIncident"
+      ],
+      "dedup_key": "MarketSuspensionTiming",
+      "recommendation": "Investigate the logic for market closure timing after red card events."
+    }
+  ]
+}

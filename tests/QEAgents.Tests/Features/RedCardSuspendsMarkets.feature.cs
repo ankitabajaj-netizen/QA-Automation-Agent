@@ -87,11 +87,11 @@ namespace QEAgents.Tests.Features
                         "team"});
             table1.AddRow(new string[] {
                         "P1",
-                        "Player 1",
+                        "Player One",
                         "Team A"});
             table1.AddRow(new string[] {
                         "P2",
-                        "Player 2",
+                        "Player Two",
                         "Team B"});
 #line 5
     await testRunner.GivenAsync("the following players are in the match:", ((string)(null)), table1, "Given ");
@@ -102,34 +102,34 @@ namespace QEAgents.Tests.Features
                         "eligiblePlayerIds"});
             table2.AddRow(new string[] {
                         "M1",
-                        "Player to score anytime",
+                        "Player to score",
                         "P1"});
             table2.AddRow(new string[] {
                         "M2",
-                        "Next Card",
-                        "P1,P2"});
+                        "Anytime Assist Provider",
+                        "P2,P1"});
             table2.AddRow(new string[] {
                         "M3",
-                        "Total Goals",
+                        "Total Cards",
                         ""});
             table2.AddRow(new string[] {
                         "M4",
-                        "Player to receive yellow card",
-                        "P2"});
+                        "First Half Winner",
+                        ""});
 #line 9
     await testRunner.GivenAsync("the following betting markets are open for the match:", ((string)(null)), table2, "Given ");
 #line hidden
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Suspend betting markets immediately on red card receipt")]
+        [NUnit.Framework.DescriptionAttribute("Immediate suspension of markets upon red card")]
         [NUnit.Framework.CategoryAttribute("P0")]
-        public async System.Threading.Tasks.Task SuspendBettingMarketsImmediatelyOnRedCardReceipt()
+        public async System.Threading.Tasks.Task ImmediateSuspensionOfMarketsUponRedCard()
         {
             string[] tagsOfScenario = new string[] {
                     "P0"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Suspend betting markets immediately on red card receipt", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Immediate suspension of markets upon red card", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 17
   this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -144,7 +144,7 @@ namespace QEAgents.Tests.Features
   await this.FeatureBackgroundAsync();
 #line hidden
 #line 18
-    await testRunner.WhenAsync("player \"Player 1\" receives a red card", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("player \"Player One\" receives a red card", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 19
     await testRunner.ThenAsync("market \"M1\" should be \"Suspended\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
@@ -153,10 +153,10 @@ namespace QEAgents.Tests.Features
     await testRunner.ThenAsync("market \"M2\" should be \"Suspended\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 21
-    await testRunner.ThenAsync("market \"M3\" should be \"Open\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+    await testRunner.ThenAsync("market \"M3\" should be \"Suspended\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 22
-    await testRunner.ThenAsync("market \"M4\" should be \"Open\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+    await testRunner.ThenAsync("market \"M4\" should be \"Suspended\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 23
     await testRunner.ThenAsync("no error should have been raised", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
@@ -166,14 +166,14 @@ namespace QEAgents.Tests.Features
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Suspend markets with player as sole subject on red card receipt")]
+        [NUnit.Framework.DescriptionAttribute("Suspension of markets for player receiving second yellow card")]
         [NUnit.Framework.CategoryAttribute("P0")]
-        public async System.Threading.Tasks.Task SuspendMarketsWithPlayerAsSoleSubjectOnRedCardReceipt()
+        public async System.Threading.Tasks.Task SuspensionOfMarketsForPlayerReceivingSecondYellowCard()
         {
             string[] tagsOfScenario = new string[] {
                     "P0"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Suspend markets with player as sole subject on red card receipt", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Suspension of markets for player receiving second yellow card", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 26
   this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -188,47 +188,21 @@ namespace QEAgents.Tests.Features
   await this.FeatureBackgroundAsync();
 #line hidden
 #line 27
-    await testRunner.WhenAsync("player \"Player 1\" receives a red card", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("player \"Player One\" receives a second yellow card resulting in a red card", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 28
     await testRunner.ThenAsync("market \"M1\" should be \"Suspended\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 29
-    await testRunner.ThenAsync("no error should have been raised", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+    await testRunner.ThenAsync("market \"M2\" should be \"Suspended\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-            }
-            await this.ScenarioCleanupAsync();
-        }
-        
-        [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Suspend markets with player among multiple options on red card receipt")]
-        [NUnit.Framework.CategoryAttribute("P1")]
-        public async System.Threading.Tasks.Task SuspendMarketsWithPlayerAmongMultipleOptionsOnRedCardReceipt()
-        {
-            string[] tagsOfScenario = new string[] {
-                    "P1"};
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Suspend markets with player among multiple options on red card receipt", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 30
+    await testRunner.ThenAsync("market \"M3\" should be \"Suspended\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 31
+    await testRunner.ThenAsync("market \"M4\" should be \"Suspended\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
 #line 32
-  this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                await this.ScenarioStartAsync();
-#line 3
-  await this.FeatureBackgroundAsync();
-#line hidden
-#line 33
-    await testRunner.WhenAsync("player \"Player 1\" receives a red card", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
-#line hidden
-#line 34
-    await testRunner.ThenAsync("market \"M2\" should be \"Suspended\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
-#line hidden
-#line 35
     await testRunner.ThenAsync("no error should have been raised", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -236,15 +210,15 @@ namespace QEAgents.Tests.Features
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Handle second yellow card as a red card")]
+        [NUnit.Framework.DescriptionAttribute("Correct suspension of markets where player is sole subject")]
         [NUnit.Framework.CategoryAttribute("P1")]
-        public async System.Threading.Tasks.Task HandleSecondYellowCardAsARedCard()
+        public async System.Threading.Tasks.Task CorrectSuspensionOfMarketsWherePlayerIsSoleSubject()
         {
             string[] tagsOfScenario = new string[] {
                     "P1"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Handle second yellow card as a red card", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 38
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Correct suspension of markets where player is sole subject", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 35
   this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -257,13 +231,13 @@ namespace QEAgents.Tests.Features
 #line 3
   await this.FeatureBackgroundAsync();
 #line hidden
-#line 39
-    await testRunner.WhenAsync("player \"Player 2\" receives a second yellow card resulting in a red card", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line 36
+    await testRunner.WhenAsync("player \"Player One\" receives a red card", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 40
-    await testRunner.ThenAsync("market \"M2\" should be \"Suspended\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line 37
+    await testRunner.ThenAsync("market \"M1\" should be \"Suspended\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 41
+#line 38
     await testRunner.ThenAsync("no error should have been raised", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -271,15 +245,15 @@ namespace QEAgents.Tests.Features
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Test suspension delay (boundary case)")]
-        [NUnit.Framework.CategoryAttribute("P0")]
-        public async System.Threading.Tasks.Task TestSuspensionDelayBoundaryCase()
+        [NUnit.Framework.DescriptionAttribute("Correct suspension of markets where player is one of several subjects")]
+        [NUnit.Framework.CategoryAttribute("P1")]
+        public async System.Threading.Tasks.Task CorrectSuspensionOfMarketsWherePlayerIsOneOfSeveralSubjects()
         {
             string[] tagsOfScenario = new string[] {
-                    "P0"};
+                    "P1"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Test suspension delay (boundary case)", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 44
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Correct suspension of markets where player is one of several subjects", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 41
   this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -292,16 +266,13 @@ namespace QEAgents.Tests.Features
 #line 3
   await this.FeatureBackgroundAsync();
 #line hidden
-#line 45
-    await testRunner.WhenAsync("player \"Player 1\" receives a red card", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line 42
+    await testRunner.WhenAsync("player \"Player Two\" receives a red card", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 46
-    await testRunner.ThenAsync("market \"M1\" should be suspended within 1000ms", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line 43
+    await testRunner.ThenAsync("market \"M2\" should be \"Suspended\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 47
-    await testRunner.ThenAsync("market \"M2\" should be suspended within 1000ms", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
-#line hidden
-#line 48
+#line 44
     await testRunner.ThenAsync("no error should have been raised", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -309,15 +280,15 @@ namespace QEAgents.Tests.Features
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Verify non-suspension of unrelated markets")]
+        [NUnit.Framework.DescriptionAttribute("Market remains suspended for duration post red card")]
         [NUnit.Framework.CategoryAttribute("P2")]
-        public async System.Threading.Tasks.Task VerifyNon_SuspensionOfUnrelatedMarkets()
+        public async System.Threading.Tasks.Task MarketRemainsSuspendedForDurationPostRedCard()
         {
             string[] tagsOfScenario = new string[] {
                     "P2"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Verify non-suspension of unrelated markets", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 51
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Market remains suspended for duration post red card", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 47
   this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -330,17 +301,84 @@ namespace QEAgents.Tests.Features
 #line 3
   await this.FeatureBackgroundAsync();
 #line hidden
-#line 52
-    await testRunner.WhenAsync("player \"Player 1\" receives a red card", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line 48
+    await testRunner.WhenAsync("player \"Player One\" receives a red card", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
+#line 49
+    await testRunner.ThenAsync("market \"M1\" should be suspended within 1000ms", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 50
+    await testRunner.ThenAsync("market \"M2\" should be suspended within 1000ms", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Handling of red card input during no active bets")]
+        [NUnit.Framework.CategoryAttribute("P0")]
+        public async System.Threading.Tasks.Task HandlingOfRedCardInputDuringNoActiveBets()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "P0"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Handling of red card input during no active bets", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 53
-    await testRunner.ThenAsync("market \"M3\" should be \"Open\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+  this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 3
+  await this.FeatureBackgroundAsync();
 #line hidden
 #line 54
-    await testRunner.ThenAsync("market \"M4\" should be \"Open\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+    await testRunner.WhenAsync("player \"Player One\" receives a red card", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 55
+    await testRunner.ThenAsync("market \"M3\" should be \"Suspended\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 56
     await testRunner.ThenAsync("no error should have been raised", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Market suspension timing for near-real-time events")]
+        [NUnit.Framework.CategoryAttribute("P1")]
+        public async System.Threading.Tasks.Task MarketSuspensionTimingForNear_Real_TimeEvents()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "P1"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Market suspension timing for near-real-time events", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 59
+  this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 3
+  await this.FeatureBackgroundAsync();
+#line hidden
+#line 60
+    await testRunner.WhenAsync("player \"Player One\" receives a red card", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 61
+    await testRunner.ThenAsync("market \"M1\" should be suspended within 500ms", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 62
+    await testRunner.ThenAsync("market \"M2\" should be suspended within 500ms", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
